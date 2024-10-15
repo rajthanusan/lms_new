@@ -485,13 +485,9 @@ const Login = () => {
         onClick={() => setShowForgotPassword(true)}
       />
        <div className="mt-0 text-center">
-      <span>Don't have an account? </span>
-      <Link to="/register">
-        <Button
-          label="Register"
-          className="p-button-sm mx-2 custom-darkblue-button"
-          icon="pi pi-user-plus"
-        />
+       <span>Don't have an account? </span>
+      <Link to="/register" className="p-button-link" style={{ textDecoration: 'underline' }}>
+        Register
       </Link>
     </div>
     </div>

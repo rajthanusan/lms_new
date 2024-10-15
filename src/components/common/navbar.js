@@ -18,7 +18,11 @@ export function Nav() {
         />
       </Link>
       <Link to="/register">
-       
+        <Button
+          label="Register"
+          className="p-button-sm mx-2 custom-darkblue-button"
+          icon="pi pi-user-plus"
+        />
       </Link>
     </>
   );

@@ -8,6 +8,7 @@ import Navbar from "./navbar";
 import { Card } from "primereact/card";
 import { GoogleLogin } from "@react-oauth/google"; 
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; 
+import { Link } from "react-router-dom";
 // Google login
 // Assuming this file exists for your custom styles
 
@@ -483,16 +484,16 @@ const Login = () => {
         className="p-button-link w-100"
         onClick={() => setShowForgotPassword(true)}
       />
-      <div className="mt-0 text-center">
-        <span>Don't have an account? </span>
-        <a
-          href="/register"
-          className="p-button-link"
-          style={{ textDecoration: "underline" }}
-        >
-          Register
-        </a>
-      </div>
+       <div className="mt-0 text-center">
+      <span>Don't have an account? </span>
+      <Link to="/register">
+        <Button
+          label="Register"
+          className="p-button-sm mx-2 custom-darkblue-button"
+          icon="pi pi-user-plus"
+        />
+      </Link>
+    </div>
     </div>
   )}
 </Card>

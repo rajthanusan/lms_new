@@ -17,7 +17,13 @@ export function Nav() {
           icon="pi pi-sign-in"
         />
       </Link>
-      
+      <Link to="/register">
+        <Button
+          label="Register"
+          className="p-button-sm mx-2 custom-darkblue-button"
+          icon="pi pi-user-plus"
+        />
+      </Link>
     </>
   );
 
@@ -29,7 +35,7 @@ export function Navuser() {
   const username = loggedInUser ? JSON.parse(loggedInUser).username : "";
 
   const items = [
-    
+    { label: "Home", icon: "pi pi-home", url: "/Employee" },
     { label: "Apply Leave", icon: "pi pi-users", url: "/applyleave" },
     { label: "My Leave", icon: "pi pi-calendar-plus", url: "/myleave" },
     {

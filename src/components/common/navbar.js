@@ -18,7 +18,11 @@ export function Nav() {
         />
       </Link>
       <Link to="/register">
-       
+        <Button
+          label="Register"
+          className="p-button-sm mx-2 custom-darkblue-button"
+          icon="pi pi-user-plus"
+        />
       </Link>
     </>
   );
@@ -31,7 +35,7 @@ export function Navuser() {
   const username = loggedInUser ? JSON.parse(loggedInUser).username : "";
 
   const items = [
-    { url: "/Employee" },
+    { label: "Home", icon: "pi pi-home", url: "/Employee" },
     { label: "Apply Leave", icon: "pi pi-users", url: "/applyleave" },
     { label: "My Leave", icon: "pi pi-calendar-plus", url: "/myleave" },
     {
@@ -71,7 +75,7 @@ export function Navmanager({ username }) {
       : "");
 
   const items = [
-    { url: "/DManager" },
+    { label: "Home", icon: "pi pi-home", url: "/DManager" },
     { label: "Employees", icon: "pi pi-users", url: "/employees" },
     {
       label: "Leave Requests",
@@ -104,7 +108,7 @@ export function Navmanager({ username }) {
 
 export function Navadmin() {
   const items = [
-    { url: "/Admin" },
+    { label: "Home", icon: "pi pi-home", url: "/Admin" },
     { label: "Manager", icon: "pi pi-id-card", url: "/manager" },
     { label: "Department", icon: "pi pi-sitemap", url: "/department" },
     { label: "Leave Types", icon: "pi pi-calendar", url: "/leavetype" },

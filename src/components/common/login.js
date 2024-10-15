@@ -477,17 +477,23 @@ const Login = () => {
     </div>
   )}
   {!showForgotPassword && (
-    <div className="mt-0 text-center">
-    <span>Don't have an account? </span>
-    <Link
-      to="./register"
-      className="p-button-link"
-      style={{ textDecoration: "underline" }}
-    >
-      Register
-    </Link>
-  </div>
-  
+    <div className="mt-0">
+      <Button
+        label="Forgot Password?"
+        className="p-button-link w-100"
+        onClick={() => setShowForgotPassword(true)}
+      />
+      <div className="mt-0 text-center">
+        <span>Don't have an account? </span>
+        <a
+          href="/register"
+          className="p-button-link"
+          style={{ textDecoration: "underline" }}
+        >
+          Register
+        </a>
+      </div>
+    </div>
   )}
 </Card>
 

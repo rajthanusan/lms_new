@@ -49,7 +49,7 @@ export default function Routesnav() {
 
                 {/* Login and register routes */}
                 <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+                
 
                 {/* User pages routes */}
                 <Route

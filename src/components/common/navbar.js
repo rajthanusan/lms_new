@@ -17,7 +17,9 @@ export function Nav() {
           icon="pi pi-sign-in"
         />
       </Link>
-      
+      <Link to="/register">
+       
+      </Link>
     </>
   );
 

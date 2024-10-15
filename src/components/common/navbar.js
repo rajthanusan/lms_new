@@ -6,7 +6,7 @@ import { SplitButton } from "primereact/splitbutton";
 import "../customStyles.css"; // Import the custom CSS
 
 export function Nav() {
- 
+  const items = [{  }];
 
   const end = (
     <>
@@ -29,7 +29,6 @@ export function Navuser() {
   const username = loggedInUser ? JSON.parse(loggedInUser).username : "";
 
   const items = [
-   
     { label: "Apply Leave", icon: "pi pi-users", url: "/applyleave" },
     { label: "My Leave", icon: "pi pi-calendar-plus", url: "/myleave" },
     {
@@ -69,7 +68,6 @@ export function Navmanager({ username }) {
       : "");
 
   const items = [
-   
     { label: "Employees", icon: "pi pi-users", url: "/employees" },
     {
       label: "Leave Requests",

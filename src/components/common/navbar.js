@@ -6,7 +6,7 @@ import { SplitButton } from "primereact/splitbutton";
 import "../customStyles.css"; // Import the custom CSS
 
 export function Nav() {
-  const items = [{ label: "", icon: "", url: "/home" }];
+  const items = [{ label: "Home", icon: "pi pi-home", url: "/home" }];
 
   const end = (
     <>
@@ -69,7 +69,7 @@ export function Navmanager({ username }) {
       : "");
 
   const items = [
-    { label: "", icon: "", url: "/DManager" },
+    { label: "Home", icon: "pi pi-home", url: "/DManager" },
     { label: "Employees", icon: "pi pi-users", url: "/employees" },
     {
       label: "Leave Requests",
@@ -102,7 +102,7 @@ export function Navmanager({ username }) {
 
 export function Navadmin() {
   const items = [
-    { label: "", icon: "", url: "/Admin" },
+    { label: "Home", icon: "pi pi-home", url: "/Admin" },
     { label: "Manager", icon: "pi pi-id-card", url: "/manager" },
     { label: "Department", icon: "pi pi-sitemap", url: "/department" },
     { label: "Leave Types", icon: "pi pi-calendar", url: "/leavetype" },

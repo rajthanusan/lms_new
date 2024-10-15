@@ -479,14 +479,13 @@ const Login = () => {
   {!showForgotPassword && (
     <div className="mt-0 text-center">
     <span>Don't have an account? </span>
-    <a
-      href="#"
+    <Link
+      to="./register"
       className="p-button-link"
       style={{ textDecoration: "underline" }}
-      onClick={() => window.location.href = "./register"}
     >
       Register
-    </a>
+    </Link>
   </div>
   
   )}

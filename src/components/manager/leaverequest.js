@@ -81,7 +81,7 @@ const Leaverequest = () => {
 
   const confirmAccept = () => {
     axios
-      .put(`http://localhost:8085/api/LeaveApply/${selectedItemId}/approved`)
+      .put(`https://lms-be-beta.vercel.app/api/LeaveApply/${selectedItemId}/approved`)
       .then((response) => {
         toast.success("Leave request accepted");
         getData();

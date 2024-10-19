@@ -10,13 +10,7 @@ export function Nav() {
 
   const end = (
     <>
-      <Link to="/login">
-        <Button
-          label="Login"
-          className="p-button-sm custom-darkblue-button"
-          icon="pi pi-sign-in"
-        />
-      </Link>
+     
       
     </>
   );

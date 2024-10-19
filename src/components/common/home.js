@@ -1,5 +1,7 @@
 import React from 'react'
 import Navbar from './navbar'
+import { Link } from "react-router-dom";
+import { Button } from 'primereact/button';
 
 export function Homebase() {
     return (
@@ -25,8 +27,14 @@ export function Homebase() {
                     </p>
 
                     <div className="text-center text-md-left mt-5 ">
-                        <a href="/home" className="btn btn-primary btn-icon custom-gold-button " style={{ pointerEvents: 'none' }}>
-                            <span className="btn-inner--text ">Get started</span>
+                        <a href="/home" className="" >
+                        <Link to="/login">
+        <Button
+          label="Login"
+          className="p-button-sm custom-darkblue-button"
+          icon="pi pi-sign-in"
+        />
+      </Link>
                             <span className="btn-inner--icon"><i data-feather="chevron-right"></i></span>
                         </a>
                         <a href="/home" className="btn btn-neutral btn-icon d-none d-lg-inline-block ml-2 " style={{ pointerEvents: 'none' }}>See Features</a>

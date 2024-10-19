@@ -9,6 +9,7 @@ import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import Navbar from "./navbar";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 
 const Register = () => {
@@ -340,6 +341,11 @@ const Register = () => {
 
   <Button type="submit" label="Register" className="p-button-primary custom-darkblue-button" />
 </form>
+<div className="text-center">
+  <Link to="/login" className="p-button-link mt-0 text-center" style={{ textDecoration: 'underline', display: 'block', marginTop: '10px' }}>
+    Back to Login
+  </Link>
+</div>
 
             </Card>
           </div>

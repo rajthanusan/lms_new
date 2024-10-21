@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { Paginator } from "primereact/paginator"; // Make sure to import the Paginator
+import { Paginator } from "primereact/paginator";
 
 const Leaverequest = () => {
   const [data, setData] = useState([]);
@@ -110,7 +110,6 @@ const Leaverequest = () => {
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
 
-  // Filtering logic to accommodate searching by leave type, username, and date
   const filteredData = Array.isArray(data)
     ? data.filter((item) => {
         const leaveTypeMatch = item.leave_type.toLowerCase().includes(searchTerm.toLowerCase());
@@ -125,7 +124,7 @@ const Leaverequest = () => {
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
 
   const onPageChange = (event) => {
-    setCurrentPage(event.page + 1); // Update current page when pagination changes
+    setCurrentPage(event.page + 1);
   };
 
   return (
@@ -144,74 +143,73 @@ const Leaverequest = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Table striped hover className="table-light">
-          <thead>
-            <tr>
-              <th>Employee Email</th>
-              <th>Leave Type</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Actions</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentRows.map((item) => (
-              <tr key={item.id}>
-                <td>{item.username}</td>
-                <td>{item.leave_type}</td>
-                <td>{new Date(item.start_date).toLocaleDateString()}</td>
-                <td>{new Date(item.end_date).toLocaleDateString()}</td>
-                <td>
-                  <OverlayTrigger
-                    placement="top"
-                    overlay={
-                      <Tooltip id={`tooltip-accept-${item.id}`}>Accept</Tooltip>
-                    }
-                  >
-                    <Button
-                      className="btn btn-primary custom-darkblue-button"
-                      disabled={
-                        item.status === "Accepted" || item.status === "Declined"
-                      }
-                      onClick={() => handleAccept(item.id)}
-                    >
-                      <FontAwesomeIcon icon={faThumbsUp} />
-                    </Button>
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    overlay={
-                      <Tooltip id={`tooltip-decline-${item.id}`}>
-                        Decline
-                      </Tooltip>
-                    }
-                  >
-                    <Button
-                      className="btn btn-danger ms-2"
-                      disabled={
-                        item.status === "Accepted" || item.status === "Declined"
-                      }
-                      onClick={() => handleDecline(item.id)}
-                    >
-                      <FontAwesomeIcon icon={faThumbsDown} />
-                    </Button>
-                  </OverlayTrigger>
-                </td>
-                <td>{item.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        
+        {currentRows.length === 0 ? (
+          <div className="alert alert-warning" role="alert">
+            No employee records found.
+          </div>
+        ) : (
+          <>
+            <Table striped hover className="table-light">
+              <thead>
+                <tr>
+                  <th>Employee Email</th>
+                  <th>Leave Type</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Actions</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentRows.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.username}</td>
+                    <td>{item.leave_type}</td>
+                    <td>{new Date(item.start_date).toLocaleDateString()}</td>
+                    <td>{new Date(item.end_date).toLocaleDateString()}</td>
+                    <td>
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={<Tooltip id={`tooltip-accept-${item.id}`}>Accept</Tooltip>}
+                      >
+                        <Button
+                          className="btn btn-primary custom-darkblue-button"
+                          disabled={item.status === "Accepted" || item.status === "Declined"}
+                          onClick={() => handleAccept(item.id)}
+                        >
+                          <FontAwesomeIcon icon={faThumbsUp} />
+                        </Button>
+                      </OverlayTrigger>
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={<Tooltip id={`tooltip-decline-${item.id}`}>Decline</Tooltip>}
+                      >
+                        <Button
+                          className="btn btn-danger ms-2"
+                          disabled={item.status === "Accepted" || item.status === "Declined"}
+                          onClick={() => handleDecline(item.id)}
+                        >
+                          <FontAwesomeIcon icon={faThumbsDown} />
+                        </Button>
+                      </OverlayTrigger>
+                    </td>
+                    <td>{item.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
 
-        {/* Paginator */}
-        <Paginator
-          first={indexOfFirstRow}
-          rows={rowsPerPage}
-          totalRecords={filteredData.length}
-          onPageChange={onPageChange}
-          className="custom-paginator"
-        />
+            {/* Paginator */}
+            <Paginator
+              first={indexOfFirstRow}
+              rows={rowsPerPage}
+              totalRecords={filteredData.length}
+              onPageChange={onPageChange}
+              className="custom-paginator"
+            />
+          </>
+        )}
       </div>
 
       {/* Accept Modal */}
@@ -241,10 +239,7 @@ const Leaverequest = () => {
           Are you sure you want to decline this leave request?
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setShowDeclineModal(false)}
-          >
+          <Button variant="secondary" onClick={() => setShowDeclineModal(false)}>
             Cancel
           </Button>
           <Button variant="danger" onClick={confirmDecline}>

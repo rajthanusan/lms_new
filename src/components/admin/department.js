@@ -100,7 +100,7 @@ const RegisterDepartment = () => {
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 3;
+    const itemsPerPage = 4;
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const currentItems = data.slice(startIndex, endIndex);

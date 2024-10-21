@@ -27,7 +27,6 @@ const Employees = () => {
     ? JSON.parse(sessionStorage.getItem("loggedInDepartmentManager")).username
     : "";
 
-  // Memoize the getData function
   const getData = useCallback(() => {
     if (!department) {
       toast.error("No department specified.");
@@ -36,7 +35,7 @@ const Employees = () => {
 
     axios
       .get("https://lms-be-beta.vercel.app/api/User", {
-        params: { department }, // Pass department as a query parameter
+        params: { department }, 
       })
       .then((result) => {
         setData(result.data);
@@ -47,7 +46,6 @@ const Employees = () => {
       });
   }, [department]);
 
-  // Fetch department on component mount
   useEffect(() => {
     const getDepartment = async () => {
       try {
@@ -65,24 +63,23 @@ const Employees = () => {
     };
 
     getDepartment();
-  }, [username]); // This effect runs once when the component mounts
+  }, [username]);
 
-  // Fetch employee data once department is available
   useEffect(() => {
     if (department) {
       getData();
     }
-  }, [department, getData]); // Include getData in the dependency array
+  }, [department, getData]);
 
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const filteredData = Array.isArray(data)
-  ? data.filter((item) =>
-      item.username.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  : [];
+    ? data.filter((item) =>
+        item.username.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
-const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
+  const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
   const onPageChange = (event) => {
     setCurrentPage(event.page + 1);
   };
@@ -93,9 +90,7 @@ const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
   };
 
   const handleCloseModal = () => setShowModal(false);
-
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
-
   const handleShowDeleteModal = (id) => {
     setDeleteEmployeeId(id);
     setShowDeleteModal(true);
@@ -108,7 +103,7 @@ const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
         .then((result) => {
           if (result.status === 200) {
             toast.success("Employee has been deleted");
-            getData(); // Re-fetch employee data after deletion
+            getData();
           }
         })
         .catch((error) => {
@@ -133,73 +128,74 @@ const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
           />
         </div>
         <div className="mb-3">
-          <h5>{department || ""} Employees</h5>{" "}
-          {/* Display department */}
+          <h5>{department || ""} Employees</h5>
         </div>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Birth date</th>
-              <th>Joined date</th>
-              <th>Email</th>
-              <th>Department</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentRows.map((item, index) => (
-              <tr key={index}>
-                <td>{item.name}</td>
-                <td>{new Date(item.birthday).toLocaleDateString()}</td>
-                <td>{new Date(item.joindate).toLocaleDateString()}</td>
-
-                <td>{item.username}</td>
-                <td>{item.department}</td>
-                <td>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => handleShowDeleteModal(item.id)}
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
-                  <button
-                    className="btn btn-primary ms-2 custom-darkblue-button"
-                    onClick={() => handleDetails(item)}
-                  >
-                    <FontAwesomeIcon icon={faCircleInfo} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <Paginator
-  first={indexOfFirstRow}
-  rows={rowsPerPage}
-  totalRecords={filteredData.length}
-  onPageChange={onPageChange}
-  className="custom-paginator" // Add your custom class here
-/>
+        {currentRows.length > 0 ? (
+          <>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Birth date</th>
+                  <th>Joined date</th>
+                  <th>Email</th>
+                  <th>Department</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentRows.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.name}</td>
+                    <td>{new Date(item.birthday).toLocaleDateString()}</td>
+                    <td>{new Date(item.joindate).toLocaleDateString()}</td>
+                    <td>{item.username}</td>
+                    <td>{item.department}</td>
+                    <td>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleShowDeleteModal(item.id)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                      <button
+                        className="btn btn-primary ms-2 custom-darkblue-button"
+                        onClick={() => handleDetails(item)}
+                      >
+                        <FontAwesomeIcon icon={faCircleInfo} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+            <Paginator
+              first={indexOfFirstRow}
+              rows={rowsPerPage}
+              totalRecords={filteredData.length}
+              onPageChange={onPageChange}
+              className="custom-paginator"
+            />
+          </>
+        ) : (
+          <div className="alert alert-warning" role="alert">
+            No employee records found.
+          </div>
+        )}
         <Modal show={showModal} onHide={handleCloseModal}>
           <Modal.Header closeButton>
-            <Modal.Title className="text-darkblue">
-              Employee Details
-            </Modal.Title>
+            <Modal.Title className="text-darkblue">Employee Details</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {selectedEmployee && (
               <div>
                 <h5>{selectedEmployee.name}</h5>
                 <p>
-                  Birth date:{" "}
-                  {new Date(selectedEmployee.birthday).toLocaleDateString()}
+                  Birth date: {new Date(selectedEmployee.birthday).toLocaleDateString()}
                 </p>
                 <p>
-                  Joined date:{" "}
-                  {new Date(selectedEmployee.joindate).toLocaleDateString()}
+                  Joined date: {new Date(selectedEmployee.joindate).toLocaleDateString()}
                 </p>
-
                 <p>Email: {selectedEmployee.username}</p>
               </div>
             )}

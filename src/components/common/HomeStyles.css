@@ -1,0 +1,4 @@
+.no-scroll {
+    overflow: hidden;
+    height: 100vh; /* Ensures the element takes full height */
+}

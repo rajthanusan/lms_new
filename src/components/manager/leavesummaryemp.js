@@ -197,20 +197,20 @@ const ManagerLeaveSummary = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Leave Type</th>
-              <th>Approved</th>
-              <th>Pending</th>
-              <th>Rejected</th>
-              <th>Report</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentRows.length > 0 ? (
-              currentRows.map((username) =>
+        {currentRows.length > 0 ? (
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Leave Type</th>
+                <th>Approved</th>
+                <th>Pending</th>
+                <th>Rejected</th>
+                <th>Report</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentRows.map((username) =>
                 Object.keys(leaveSummary[username]).map((leaveType, i) => (
                   <Fragment key={`${username}-${i}`}>
                     <tr>
@@ -236,23 +236,23 @@ const ManagerLeaveSummary = () => {
                     </tr>
                   </Fragment>
                 ))
-              )
-            ) : (
-              <tr>
-                <td colSpan="6" className="text-center">
-                  No leave records available.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
-        <Paginator
-          first={indexOfFirstRow}
-          rows={itemsPerPage}
-          totalRecords={filteredData.length}
-          onPageChange={onPageChange}
-          className="custom-paginator"
-        />
+              )}
+            </tbody>
+          </Table>
+        ) : (
+          <div className="alert alert-warning text-center" role="alert">
+            No leave records available.
+          </div>
+        )}
+        {currentRows.length > 0 && (
+          <Paginator
+            first={indexOfFirstRow}
+            rows={itemsPerPage}
+            totalRecords={filteredData.length}
+            onPageChange={onPageChange}
+            className="custom-paginator"
+          />
+        )}
       </Container>
     </Fragment>
   );

@@ -128,48 +128,56 @@ const MyLeave = () => {
                     />
                 </div>
 
-                <Table striped hover className="table-light">
-                    <thead>
-                        <tr>
-                            <th>Leave Type</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Comments</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentRows.map((item, index) => (
-                            <tr key={index}>
-                                <td>{item.leave_type}</td>
-                                <td>{new Date(item.start_date).toLocaleDateString()}</td>
-                                <td>{new Date(item.end_date).toLocaleDateString()}</td>
-                                <td>{item.comments}</td>
-                                <td>
-                                    <div
-                                        className={`badge text-wrap ${item.status === 'pending' ? 'bg-warning' : item.status === 'Accepted' ? 'bg-success' : item.status === 'Declined' ? 'bg-danger' : ''}`}
-                                        style={{
-                                            color: item.status === 'pending' ? 'black' :
-                                                item.status === 'approved' ? 'green' :
-                                                    item.status === 'rejected' ? 'red' : 'inherit'
-                                        }}
-                                    >
-                                        {item.status}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
+                {currentRows.length === 0 ? (  // Check if there are no current rows
+                    <div className="alert alert-warning" role="alert">
+                        No leave requests found. Please submit a new leave request.
+                    </div>
+                ) : (
+                    <>
+                        <Table striped hover className="table-light">
+                            <thead>
+                                <tr>
+                                    <th>Leave Type</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Comments</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentRows.map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{item.leave_type}</td>
+                                        <td>{new Date(item.start_date).toLocaleDateString()}</td>
+                                        <td>{new Date(item.end_date).toLocaleDateString()}</td>
+                                        <td>{item.comments}</td>
+                                        <td>
+                                            <div
+                                                className={`badge text-wrap ${item.status === 'pending' ? 'bg-warning' : item.status === 'Accepted' ? 'bg-success' : item.status === 'Declined' ? 'bg-danger' : ''}`}
+                                                style={{
+                                                    color: item.status === 'pending' ? 'black' :
+                                                        item.status === 'approved' ? 'green' :
+                                                            item.status === 'rejected' ? 'red' : 'inherit'
+                                                }}
+                                            >
+                                                {item.status}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
 
-                {/* Replace pagination with Paginator */}
-                <Paginator
-                    first={indexOfFirstRow}
-                    rows={rowsPerPage}
-                    totalRecords={data.length} // Total data length
-                    onPageChange={onPageChange}
-                    className="custom-paginator" // Add your custom class here
-                />
+                        {/* Replace pagination with Paginator */}
+                        <Paginator
+                            first={indexOfFirstRow}
+                            rows={rowsPerPage}
+                            totalRecords={filteredData.length} // Total filtered data length
+                            onPageChange={onPageChange}
+                            className="custom-paginator" // Add your custom class here
+                        />
+                    </>
+                )}
             </Container>
 
             {/* Edit Modal */}

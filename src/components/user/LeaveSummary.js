@@ -145,24 +145,31 @@ const LeaveSummary = () => {
         <h2 className="mb-4 text-darkblue">Leave Summary</h2>
         <hr />
         <div className="row">
-          {approvedLeaveCount.map((item, index) => (
-            <div className="col-md-4 mb-4" key={index}>
-              <div className="card shadow-sm">
-                <div className="card-body">
-                  <h4 className="card-title text-darkblue">{item.leave_type_name}</h4>
-                  <hr />
-                  <p className="card-text">
-                    Approved Leaves: <strong>{item.approved}</strong> / <strong>{item.total}</strong>
-                  </p>
+          {approvedLeaveCount.length > 0 ? (
+            approvedLeaveCount.map((item, index) => (
+              <div className="col-md-4 mb-4" key={index}>
+                <div className="card shadow-sm">
+                  <div className="card-body">
+                    <h4 className="card-title text-darkblue">{item.leave_type_name}</h4>
+                    <hr />
+                    <p className="card-text">
+                      Approved Leaves: <strong>{item.approved}</strong> / <strong>{item.total}</strong>
+                    </p>
+                  </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="alert alert-warning" role="alert">
+              No leave requests found.
             </div>
-          ))}
+          )}
         </div>
         <div className="text-center mb-4">
           <button
             className="btn btn-primary custom-darkblue-button"
             onClick={downloadPdf}
+            disabled={approvedLeaveCount.length === 0} // Disable if no leave types are available
           >
             Download Leave Summary Report
           </button>

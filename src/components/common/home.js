@@ -96,7 +96,7 @@ export function Homeuser() {
                             Welcome <strong className="text-darkblue">{name}</strong>, to the Leave Management System.
                         </h1>
                         <p className="lead text-muted">
-                            A well-rounded Leave Management System offers various features that help manage employee leave efficiently. Employees can easily submit leave requests, check their available leave balances, and monitor the status of their requests.
+                        A well-rounded Leave Management System offers various features to manage employee leave efficiently. Employees can easily submit leave requests, check their available leave balances, monitor the status of their requests, and download their leave reports.
                         </p>
                     </div>
                 </div>
@@ -141,7 +141,7 @@ export function Homeadmin() {
                             Welcome <strong className="text-darkblue">{name}</strong>, to the Leave Management System.
                         </h1>
                         <p className="lead text-muted">
-                            The Leave Management System provides administrators with powerful tools to manage employee leave efficiently. Admins can oversee leave requests, track employee leave balances, and manage approvals or rejections, ensuring smooth operations and improved coordination across the organization.
+                        The Leave Management System provides administrators with effective tools to manage managers, departments, and leave types, ensuring smooth operations and better coordination across the organization. It facilitates easy reporting and analytics, allowing for informed decision-making and improved resource management.
                         </p>
                     </div>
                 </div>

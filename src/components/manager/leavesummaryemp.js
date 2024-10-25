@@ -132,14 +132,14 @@ const ManagerLeaveSummary = () => {
   const downloadPdf = (username) => {
     const doc = new jsPDF();
     doc.setFontSize(18);
-    doc.addImage(logo, 'PNG', 14, 20, 20, 20);
+    doc.addImage(logo, "PNG", 14, 20, 20, 20);
     doc.text("Employee Leave Summary", 14, 60);
-
+  
     doc.setFontSize(12);
     doc.text(`Employee: ${username}`, 14, 70);
     doc.text(`Department: ${department}`, 14, 76);
     doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 14, 82);
-
+  
     const leaveDataForUser = leaveSummary[username];
     const tableData = Object.keys(leaveDataForUser).map((leaveType) => [
       leaveType,
@@ -147,7 +147,14 @@ const ManagerLeaveSummary = () => {
       leaveDataForUser[leaveType].pending || 0,
       leaveDataForUser[leaveType].rejected || 0,
     ]);
-
+  
+    // Calculate totals and add "Total Leaves" row
+    const totalApproved = tableData.reduce((acc, item) => acc + item[1], 0);
+    const totalPending = tableData.reduce((acc, item) => acc + item[2], 0);
+    const totalRejected = tableData.reduce((acc, item) => acc + item[3], 0);
+    tableData.push(["Total", totalApproved, totalPending, totalRejected]);
+  
+    // First table with "Total Leaves" row
     doc.autoTable({
       startY: 90,
       head: [["Leave Type", "Approved", "Pending", "Rejected"]],
@@ -156,8 +163,14 @@ const ManagerLeaveSummary = () => {
       styles: { fontSize: 10 },
       headStyles: { fillColor: [41, 128, 185] },
       margin: { top: 10, left: 14, right: 14 },
+      didParseCell: (data) => {
+        if (data.row.index === tableData.length - 1) {
+          data.cell.styles.fillColor = [200, 200, 200]; // Light gray for total row
+          data.cell.styles.fontStyle = 'bold';
+        }
+      },
     });
-
+  
     const filteredLeaveData = leaveData.filter(leave => leave.username === username);
     const detailedLeaveData = filteredLeaveData.map(leave => [
       leave.leave_type,
@@ -166,15 +179,18 @@ const ManagerLeaveSummary = () => {
       leave.comments,
       leave.status,
     ]);
-
+  
+    // Second table styled like the first table
     doc.autoTable({
       startY: doc.lastAutoTable.finalY + 10,
       head: [["Leave Type", "Start Date", "End Date", "Comments", "Status"]],
       body: detailedLeaveData,
-      theme: "grid",
+      theme: "striped",  // Consistent style with the first table
       styles: { fontSize: 10 },
+      headStyles: { fillColor: [41, 128, 185] },
     });
-
+  
+    // Add page numbers and footer
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
@@ -182,9 +198,10 @@ const ManagerLeaveSummary = () => {
       doc.text(`Page ${i} of ${pageCount}`, 14, doc.internal.pageSize.height - 10);
       doc.text("Leave Management Team", 170, doc.internal.pageSize.height - 10);
     }
-
+  
     doc.save(`${username}-leave-summary-${new Date().toLocaleDateString()}.pdf`);
   };
+  
 
   return (
     <Fragment>

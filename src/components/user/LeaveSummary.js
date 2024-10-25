@@ -8,76 +8,90 @@ import Navbar from "../common/navbar";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import logo from "../image/leave-management-1.png"; 
+import Loading from '../Loading';
 
 const LeaveSummary = () => {
   const [leaveTypes, setLeaveTypes] = useState([]);
   const [leaveLimits, setLeaveLimits] = useState({});
   const [data, setData] = useState([]);
   const [department, setDepartment] = useState(""); 
+  const [loading, setLoading] = useState(true); // Loading state
 
   const loggedInUser = sessionStorage.getItem("loggedInUser");
   const username = loggedInUser ? JSON.parse(loggedInUser).username : "";
 
   const fetchLeaveTypes = useCallback(() => {
-    axios
-      .get("https://lms-be-beta.vercel.app/api/getLeavetype")
-      .then((result) => {
-        setLeaveTypes(result.data);
-        const limits = {};
-        result.data.forEach((item) => {
-          limits[item.leave_type_name] = item.total_days || 0;
-        });
-        setLeaveLimits(limits);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      setLoading(true); // Set loading to true before fetching
+      axios
+          .get("https://lms-be-beta.vercel.app/api/getLeavetype")
+          .then((result) => {
+              setLeaveTypes(result.data);
+              const limits = {};
+              result.data.forEach((item) => {
+                  limits[item.leave_type_name] = item.total_days || 0;
+              });
+              setLeaveLimits(limits);
+          })
+          .catch((error) => {
+              console.log(error);
+          })
+          .finally(() => {
+              setLoading(false); // Set loading to false after fetching
+          });
   }, []);
 
-  // Fetch department for the logged-in manager
   const fetchDepartment = useCallback(async () => {
-    try {
-      const response = await axios.get("https://lms-be-beta.vercel.app/find-department", {
-        params: { username },
-      });
-      setDepartment(response.data.department);
-    } catch (error) {
-      console.error("Error fetching department.", error);
-    }
+      setLoading(true); // Set loading to true before fetching
+      try {
+          const response = await axios.get("https://lms-be-beta.vercel.app/find-department", {
+              params: { username },
+          });
+          setDepartment(response.data.department);
+      } catch (error) {
+          console.error("Error fetching department.", error);
+      } finally {
+          setLoading(false); // Set loading to false after fetching
+      }
   }, [username]);
 
   const fetchLeaveRequests = useCallback(() => {
-    axios
-      .get("https://lms-be-beta.vercel.app/api/LeaveView/")
-      .then((result) => {
-        const filteredData = result.data.data.filter(
-          (item) => item.username === username
-        );
-        setData(filteredData);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      setLoading(true); // Set loading to true before fetching
+      axios
+          .get("https://lms-be-beta.vercel.app/api/LeaveView/")
+          .then((result) => {
+              const filteredData = result.data.data.filter(
+                  (item) => item.username === username
+              );
+              setData(filteredData);
+          })
+          .catch((error) => {
+              console.log(error);
+          })
+          .finally(() => {
+              setLoading(false); // Set loading to false after fetching
+          });
   }, [username]);
 
   useEffect(() => {
-    fetchLeaveTypes();
-    fetchDepartment();
-    fetchLeaveRequests();
+      fetchLeaveTypes();
+      fetchDepartment();
+      fetchLeaveRequests();
   }, [fetchLeaveTypes, fetchDepartment, fetchLeaveRequests]);
 
   const approvedLeaveCount = leaveTypes.map((type) => {
-    const approvedCount = data.filter(
-      (item) =>
-        item.leave_type === type.leave_type_name && item.status === "approved"
-    ).length;
-    return {
-      leave_type_name: type.leave_type_name,
-      approved: approvedCount,
-      total: leaveLimits[type.leave_type_name] || 0,
-    };
+      const approvedCount = data.filter(
+          (item) =>
+              item.leave_type === type.leave_type_name && item.status === "approved"
+      ).length;
+      return {
+          leave_type_name: type.leave_type_name,
+          approved: approvedCount,
+          total: leaveLimits[type.leave_type_name] || 0,
+      };
   });
 
+  // Show Loading Component if data is loading
+ 
   const downloadPdf = () => {
     const doc = new jsPDF();
     doc.setFontSize(18);
@@ -136,7 +150,10 @@ const LeaveSummary = () => {
   
     doc.save(`${username}-leave-summary-${new Date().toLocaleDateString()}.pdf`);
   };
-  
+  if (loading) {
+    return <Loading />;
+}
+
   return (
     <Fragment>
       <Navbar user />

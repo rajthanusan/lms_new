@@ -10,6 +10,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Paginator } from "primereact/paginator";
+import Loading from '../Loading';
 
 const Leaverequest = () => {
   const [data, setData] = useState([]);
@@ -17,6 +18,7 @@ const Leaverequest = () => {
   const [rowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
   const [department, setDepartment] = useState("");
+  const [loading, setLoading] = useState(true); // Loading state
 
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
@@ -31,9 +33,7 @@ const Leaverequest = () => {
       try {
         const response = await axios.get(
           "https://lms-be-beta.vercel.app/find-department",
-          {
-            params: { username },
-          }
+          { params: { username } }
         );
         setDepartment(response.data.department);
       } catch (err) {
@@ -47,6 +47,7 @@ const Leaverequest = () => {
 
   const getData = useCallback(() => {
     if (department) {
+      setLoading(true); // Set loading to true when data is being fetched
       axios
         .get("https://lms-be-beta.vercel.app/api/LeaveApply/", {
           params: { department },
@@ -61,7 +62,8 @@ const Leaverequest = () => {
         .catch((error) => {
           toast.error("Error fetching data");
           console.log(error);
-        });
+        })
+        .finally(() => setLoading(false)); // Set loading to false when fetch is complete
     }
   }, [department]);
 
@@ -144,7 +146,9 @@ const Leaverequest = () => {
           />
         </div>
         
-        {currentRows.length === 0 ? (
+        {loading ? ( // Show loading spinner if loading is true
+          <Loading />
+        ) : currentRows.length === 0 ? (
           <div className="alert alert-warning" role="alert">
             No employee records found.
           </div>

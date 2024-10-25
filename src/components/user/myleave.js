@@ -9,8 +9,8 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from "../common/navbar";
-import { Paginator } from 'primereact/paginator'; // Import Paginator
-
+import { Paginator } from 'primereact/paginator'; 
+import Loading from '../Loading';
 
 const MyLeave = () => {
     const [show, setShow] = useState(false);
@@ -25,12 +25,14 @@ const MyLeave = () => {
     const [leaveTypes, setLeaveTypes] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
+    const [loading, setLoading] = useState(true);
     const rowsPerPage = 6;
 
     const loggedInUser = sessionStorage.getItem('loggedInUser');
     const username = loggedInUser ? JSON.parse(loggedInUser).username : '';
 
     const getData = useCallback(() => {
+        setLoading(true); // Start loading
         axios.get('https://lms-be-beta.vercel.app/api/LeaveView/')
             .then((result) => {
                 const filteredData = result.data.data.filter(item => item.username === username);
@@ -38,16 +40,23 @@ const MyLeave = () => {
             })
             .catch((error) => {
                 console.log(error);
+            })
+            .finally(() => {
+                setLoading(false); // Stop loading
             });
     }, [username]);
 
     const fetchLeaveTypes = useCallback(() => {
+        setLoading(true); // Start loading
         axios.get('https://lms-be-beta.vercel.app/api/getLeavetype')
             .then((result) => {
                 setLeaveTypes(result.data);
             })
             .catch((error) => {
                 console.log(error);
+            })
+            .finally(() => {
+                setLoading(false); // Stop loading
             });
     }, []);
 
@@ -101,6 +110,7 @@ const MyLeave = () => {
             });
     };
 
+
     const indexOfLastRow = currentPage * rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
 
@@ -113,6 +123,12 @@ const MyLeave = () => {
     const onPageChange = (event) => {
         setCurrentPage(event.page + 1);  // PrimeReact Paginator uses zero-based index
     };
+
+
+    if (loading) {
+        return <Loading />; // Show loading component while data is being fetched
+    }
+
     return (
         <Fragment>
             <Navbar user />

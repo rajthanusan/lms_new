@@ -8,17 +8,19 @@ import Table from "react-bootstrap/Table";
 import { Paginator } from "primereact/paginator";
 import Navbar from "../common/navbar";
 import jsPDF from "jspdf";
-import "jspdf-autotable"; 
-import logo from '../image/leave-management-1.png'; 
+import "jspdf-autotable";
+import logo from '../image/leave-management-1.png';
+import Loading from '../Loading';
 
 const ManagerLeaveSummary = () => {
   const [leaveData, setLeaveData] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(2); 
+  const [itemsPerPage] = useState(2);
   const [leaveSummary, setLeaveSummary] = useState({});
   const [department, setDepartment] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const username = sessionStorage.getItem("loggedInDepartmentManager")
     ? JSON.parse(sessionStorage.getItem("loggedInDepartmentManager")).username
@@ -26,6 +28,7 @@ const ManagerLeaveSummary = () => {
 
   const fetchDepartment = useCallback(async () => {
     try {
+      setLoading(true);
       const response = await axios.get("https://lms-be-beta.vercel.app/find-department", {
         params: { username },
       });
@@ -60,8 +63,9 @@ const ManagerLeaveSummary = () => {
       setLeaveData(filteredLeaveData);
       summarizeLeaveData(filteredLeaveData);
     } catch (error) {
-      console.log("Error fetching leave data:", error);
       toast.error("Error fetching leave data.");
+    } finally {
+      setLoading(false);
     }
   }, [employees]);
 
@@ -83,8 +87,7 @@ const ManagerLeaveSummary = () => {
         };
       }
 
-      acc[username][leaveType][status] =
-        acc[username][leaveType][status] + 1 || 1;
+      acc[username][leaveType][status] += 1;
       return acc;
     }, {});
 
@@ -92,23 +95,27 @@ const ManagerLeaveSummary = () => {
   };
 
   useEffect(() => {
-    const filtered = leaveData.filter((leave) =>
-      leave.username.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    summarizeLeaveData(filtered);
-  }, [searchTerm, leaveData]);
-
-  useEffect(() => {
     fetchDepartment();
   }, [fetchDepartment]);
 
   useEffect(() => {
-    fetchEmployees();
-  }, [fetchEmployees]);
+    if (department) {
+      fetchEmployees();
+    }
+  }, [fetchEmployees, department]);
 
   useEffect(() => {
-    getLeaveData();
+    if (employees.length > 0) {
+      getLeaveData();
+    }
   }, [getLeaveData, employees]);
+
+  useEffect(() => {
+    // If leave data is not empty and loading is false, set loading to false
+    if (leaveData.length > 0 && loading) {
+      setLoading(false);
+    }
+  }, [leaveData, loading]);
 
   const indexOfLastRow = currentPage * itemsPerPage;
   const indexOfFirstRow = indexOfLastRow - itemsPerPage;
@@ -124,10 +131,8 @@ const ManagerLeaveSummary = () => {
 
   const downloadPdf = (username) => {
     const doc = new jsPDF();
-    const logoBase64 = logo;
-
     doc.setFontSize(18);
-    doc.addImage(logoBase64, 'PNG', 14, 20, 20, 20);
+    doc.addImage(logo, 'PNG', 14, 20, 20, 20);
     doc.text("Employee Leave Summary", 14, 60);
 
     doc.setFontSize(12);
@@ -187,71 +192,66 @@ const ManagerLeaveSummary = () => {
       <Container className="my-5">
         <ToastContainer />
         <h1 className="text-darkblue">Employee Leave Summary</h1>
-        <hr />
-        <div className="input-group mb-3">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search by mail"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        {currentRows.length > 0 ? (
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>Leave Type</th>
-                <th>Approved</th>
-                <th>Pending</th>
-                <th>Rejected</th>
-                <th>Report</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentRows.map((username) =>
-                Object.keys(leaveSummary[username]).map((leaveType, i) => (
-                  <Fragment key={`${username}-${i}`}>
-                    <tr>
-                      {i === 0 && (
-                        <td rowSpan={Object.keys(leaveSummary[username]).length}>
-                          {username}
-                        </td>
-                      )}
-                      <td>{leaveType}</td>
-                      <td>{leaveSummary[username][leaveType].approved || 0}</td>
-                      <td>{leaveSummary[username][leaveType].pending || 0}</td>
-                      <td>{leaveSummary[username][leaveType].rejected || 0}</td>
-                      {i === 0 && (
-                        <td rowSpan={Object.keys(leaveSummary[username]).length}>
-                          <button
-                            className="btn btn-primary custom-darkblue-button"
-                            onClick={() => downloadPdf(username)}
-                          >
-                            Download PDF
-                          </button>
-                        </td>
-                      )}
-                    </tr>
-                  </Fragment>
-                ))
-              )}
-            </tbody>
-          </Table>
+        {loading ? (
+          <Loading />
         ) : (
-          <div className="alert alert-warning text-center" role="alert">
-            No leave records available.
-          </div>
-        )}
-        {currentRows.length > 0 && (
-          <Paginator
-            first={indexOfFirstRow}
-            rows={itemsPerPage}
-            totalRecords={filteredData.length}
-            onPageChange={onPageChange}
-            className="custom-paginator"
-          />
+          <>
+            <input
+              type="text"
+              className="form-control mb-3"
+              placeholder="Search by username"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {currentRows.length > 0 ? (
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Leave Type</th>
+                    <th>Approved</th>
+                    <th>Pending</th>
+                    <th>Rejected</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentRows.map((username) => {
+                    const leaveTypes = leaveSummary[username];
+                    return Object.keys(leaveTypes).map((leaveType, index) => (
+                      <tr key={`${username}-${leaveType}`}>
+                        {index === 0 && (
+                          <td rowSpan={Object.keys(leaveTypes).length}>{username}</td>
+                        )}
+                        <td>{leaveType}</td>
+                        <td>{leaveTypes[leaveType].approved || 0}</td>
+                        <td>{leaveTypes[leaveType].pending || 0}</td>
+                        <td>{leaveTypes[leaveType].rejected || 0}</td>
+                        {index === 0 && (
+                          <td rowSpan={Object.keys(leaveTypes).length}>
+                            <button
+                              className="btn btn-primary custom-darkblue-button"
+                              onClick={() => downloadPdf(username)}
+                            >
+                              Download PDF
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    ));
+                  })}
+                </tbody>
+              </Table>
+            ) : (
+              <p className="text-center">No data available.</p>
+            )}
+            <Paginator
+              first={(currentPage - 1) * itemsPerPage}
+              rows={itemsPerPage}
+              totalRecords={filteredData.length}
+              onPageChange={onPageChange}
+            />
+          </>
         )}
       </Container>
     </Fragment>

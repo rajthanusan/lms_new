@@ -9,6 +9,7 @@ import { Card } from "primereact/card";
 import { GoogleLogin } from "@react-oauth/google"; 
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; 
 import { Link } from "react-router-dom";
+import Loading from '../Loading';
 // Google login
 // Assuming this file exists for your custom styles
 
@@ -25,6 +26,7 @@ const Login = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState({
     username: "",
     password: "",
@@ -36,6 +38,8 @@ const Login = () => {
   // Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    
     let errors = {};
 
     if (!username) errors.username = "Username is required";
@@ -43,6 +47,7 @@ const Login = () => {
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
+      setLoading(false);
       return;
     }
 
@@ -215,6 +220,10 @@ const Login = () => {
     setIsCodeSent(false);
     setIsCodeVerified(false);
   };
+  if (loading) {
+    return <Loading />;
+}
+
 
   return (
     <>

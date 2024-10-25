@@ -7,6 +7,9 @@ import "react-toastify/dist/ReactToastify.css";
 import Navbar from "../common/navbar";
 import { Calendar } from "primereact/calendar";
 import { Card } from "primereact/card";
+import Loading from '../Loading';
+
+
 
 const ApplyLeave = () => {
   const [leave, setLeave] = useState("");
@@ -17,44 +20,52 @@ const ApplyLeave = () => {
   const [approvedLeaves, setApprovedLeaves] = useState([]);
   const [leaveLimits, setLeaveLimits] = useState({});
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+
+
   const loggedInUser = sessionStorage.getItem("loggedInUser");
   const username = loggedInUser ? JSON.parse(loggedInUser).username : "";
 
   // Move fetchLeaveRequests definition above useEffect
-  const fetchLeaveRequests = useCallback(() => {
-    axios
-      .get("https://lms-be-beta.vercel.app/api/LeaveView/")
-      .then((result) => {
+  const fetchLeaveRequests = useCallback(async () => {
+    setLoading(true); // Set loading before fetching data
+    try {
+        const result = await axios.get("https://lms-be-beta.vercel.app/api/LeaveView/");
         const filteredData = result.data.data.filter(
-          (item) => item.username === username
+            (item) => item.username === username
         );
         setApprovedLeaves(filteredData); // Set the approved leaves here
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [username]);
+    } catch (error) {
+        console.log("Error fetching leave requests:", error);
+        toast.error("Failed to load leave requests");
+    } finally {
+        setLoading(false); // Set loading to false after fetching data
+    }
+}, [username]);
 
-  useEffect(() => {
-    fetchLeaveTypes();
-    fetchLeaveRequests(); // Now this is defined before use
-  }, [fetchLeaveRequests]); // No change here
-
-  const fetchLeaveTypes = () => {
-    axios
-      .get("https://lms-be-beta.vercel.app/api/getLeavetype")
-      .then((result) => {
+const fetchLeaveTypes = async () => {
+    setLoading(true); // Set loading before fetching data
+    try {
+        const result = await axios.get("https://lms-be-beta.vercel.app/api/getLeavetype");
         setLeaveTypes(result.data);
         const limits = {};
         result.data.forEach((item) => {
-          limits[item.leave_type_name] = item.total_days || 0; // Default to 0 if total_days is undefined
+            limits[item.leave_type_name] = item.total_days || 0; // Default to 0 if total_days is undefined
         });
         setLeaveLimits(limits);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+    } catch (error) {
+        console.log("Error fetching leave types:", error);
+        toast.error("Failed to load leave types");
+    } finally {
+        setLoading(false); // Set loading to false after fetching data
+    }
+};
+
+useEffect(() => {
+    fetchLeaveTypes(); // Fetch leave types on mount
+    fetchLeaveRequests(); // Fetch leave requests on mount
+}, [fetchLeaveRequests]);
+
 
   // Calculate approved leave count based on leave types
   const approvedLeaveCount = leaveTypes.map((type) => {
@@ -142,6 +153,10 @@ enddate: enddate,     // No need to convert since it's already in "YYYY-MM-DD" f
     setComments("");
   };
 
+  if (loading) {
+    return <Loading />;
+}
+
   return (
     <Fragment>
       <Navbar user />
@@ -221,14 +236,14 @@ enddate: enddate,     // No need to convert since it's already in "YYYY-MM-DD" f
     <span className="p-float-label">
       <Calendar
         id="enddate"
-        value={enddate ? new Date(enddate) : null} // Pass a valid Date object or null
+        value={enddate ? new Date(enddate) : null} 
         onChange={(e) => {
           if (e.value) {
-            const formattedDate = e.value.toISOString().split("T")[0]; // Format to "YYYY-MM-DD"
-            setEnddate(formattedDate); // Set formatted date in state
+            const formattedDate = e.value.toISOString().split("T")[0]; 
+            setEnddate(formattedDate);
           }
         }}
-        dateFormat="dd/mm/yy" // Display format for the calendar
+        dateFormat="dd/mm/yy" 
         showIcon
       />
       <label htmlFor="enddate">End date</label>

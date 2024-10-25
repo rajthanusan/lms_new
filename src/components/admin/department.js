@@ -12,6 +12,24 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from '../common/navbar';
 
+
+const Loading = () => (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="6em" height="6em" viewBox="0 0 24 24">
+            <g>
+                <circle cx="12" cy="2.5" r="1.5" fill="#204183" opacity="0.14" />
+                <circle cx="16.75" cy="3.77" r="1.5" fill="#204183" opacity="0.29" />
+                <circle cx="20.23" cy="7.25" r="1.5" fill="#204183" opacity="0.43" />
+                <circle cx="21.5" cy="12" r="1.5" fill="#204183" opacity="0.57" />
+                <circle cx="20.23" cy="16.75" r="1.5" fill="#204183" opacity="0.71" />
+                <circle cx="16.75" cy="20.23" r="1.5" fill="#204183" opacity="0.86" />
+                <circle cx="12" cy="21.5" r="1.5" fill="#204183" />
+                <animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12" />
+            </g>
+        </svg>
+    </div>
+  );
+
 const RegisterDepartment = () => {
     const [show, setShow] = useState(false);
     const [departmentName, setDepartmentName] = useState('');
@@ -20,32 +38,40 @@ const RegisterDepartment = () => {
     const [editDepartmentName, setEditDepartmentName] = useState('');
     const [editLocation, setEditLocation] = useState('');
     const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
 
     useEffect(() => {
-        getData();
+        const fetchData = async () => {
+            setLoading(true); // Set loading before fetching data
+            await getData(); // Wait for data fetching to complete
+            setLoading(false); // Set loading to false after data is fetched
+        };
+
+        fetchData(); // Call the async function
     }, []);
 
-    const getData = () => {
-        axios.get('https://lms-be-beta.vercel.app/api/Department')
-            .then((result) => {
-                setData(result.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+    const getData = async () => {
+        try {
+            const result = await axios.get('https://lms-be-beta.vercel.app/api/Department');
+            setData(result.data);
+        } catch (error) {
+            console.log("Error fetching departments:", error);
+            toast.error("Failed to load departments");
+        }
     };
 
-    const handleEdit = (id) => {
+    const handleEdit = async (id) => {
         setShow(true);
         setEditId(id);
-        axios.get(`https://lms-be-beta.vercel.app/api/Department/${id}`)
-            .then((result) => {
-                setEditDepartmentName(result.data.department_name);
-                setEditLocation(result.data.location);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        try {
+            const result = await axios.get(`https://lms-be-beta.vercel.app/api/Department/${id}`);
+            setEditDepartmentName(result.data.department_name);
+            setEditLocation(result.data.location);
+        } catch (error) {
+            console.log("Error fetching department details:", error);
+            toast.error("Failed to load department details");
+        }
     };
 
     const handleUpdate = () => {
@@ -139,6 +165,10 @@ const RegisterDepartment = () => {
                 });
         }
     };
+
+    if (loading) {
+        return <Loading />;
+      }
 
     return (
         <Fragment>

@@ -10,6 +10,7 @@ import { Dropdown } from "primereact/dropdown";
 import Navbar from "./navbar";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Loading from '../Loading';
 
 
 const Register = () => {
@@ -22,6 +23,7 @@ const Register = () => {
   const [department, setDepartment] = useState("");
   const [departments, setDepartments] = useState([]);
   const [handphone, sethandphone] = useState(""); // New state for contact
+  const [loading, setLoading] = useState(true);
 
   // validation
   const [validationErrors, setValidationErrors] = useState({});
@@ -34,12 +36,15 @@ const Register = () => {
   // Fetch departments from the backend
   useEffect(() => {
     const fetchDepartments = async () => {
+      setLoading(true); // Step 2: Set loading to true before API call
       try {
-        const response = await axios.get("https://lms-be-beta.vercel.app/api/AllDepartment"); // Replace with your API endpoint
+        const response = await axios.get("https://lms-be-beta.vercel.app/api/AllDepartment");
         setDepartments(response.data); // Assuming response data is an array of department names
       } catch (error) {
         console.error("Failed to fetch departments", error);
         toast.error("Failed to load departments");
+      } finally {
+        setLoading(false); // Step 2: Set loading to false after API call
       }
     };
 
@@ -123,6 +128,9 @@ const Register = () => {
       setValidationErrors(errors);
     }
   };
+  if (loading) {
+    return <Loading />;
+}
 
   return (
     <>

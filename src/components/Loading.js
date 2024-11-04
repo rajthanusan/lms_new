@@ -2,7 +2,7 @@ import React from 'react';
 
 const Loading = () => (
   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-    <svg xmlns="http://www.w3.org/2000/svg" width="6em" height="6em" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 24 24">
       <g>
         <circle cx="12" cy="2.5" r="1.5" fill="#204183" opacity="0.14" />
         <circle cx="16.75" cy="3.77" r="1.5" fill="#204183" opacity="0.29" />
